@@ -58,20 +58,20 @@ class Cell{
         this.value = value;
     }
 }
-
+/*
 class Grid {
     constructor() {
       this.ylen = 12;
       this.xlen = 12;
       this.cells = ylen * xlen;
-      this.u = new Float32Array(this.numCells); // horizontal velo at each location
-      this.v = new Float32Array(this.numCells); // vertical velo at each location
-      this.newU = new Float32Array(this.numCells); //  temp storage for horizaontal velo
-      this.newV = new Float32Array(this.numCells); // temp storage for vertical velo
-      this.p = new Float32Array(this.numCells); // pressure at each location
-      this.s = new Float32Array(this.numCells); // solid or not at each location (0 is solid)
-      this.m = new Float32Array(this.numCells); // mass at each location
-      this.newM = new Float32Array(this.numCells); // temp storage for masses
+      this.u = new Float32Array(this.cells); // horizontal velo at each location
+      this.v = new Float32Array(this.cells); // vertical velo at each location
+      this.newU = new Float32Array(this.cells); //  temp storage for horizaontal velo
+      this.newV = new Float32Array(this.cells); // temp storage for vertical velo
+      this.p = new Float32Array(this.cells); // pressure at each location
+      this.s = new Float32Array(this.cells); // solid or not at each location (0 is solid)
+      this.m = new Float32Array(this.cells); // mass at each location
+      this.newM = new Float32Array(this.cells); // temp storage for masses
       this.m.fill(1.0);
     }
     
@@ -88,4 +88,4 @@ class Grid {
         }
     }
     
-  }
+  }*/
