@@ -644,9 +644,9 @@ class DraggableObject {
         px -= this.x;
         py -= this.y;
 
-        let a = 0;  // this.angle
+        let a = this.angle;
         let c = Math.cos(a), s = Math.sin(a);
-        [px, py] = [px*c-py*s, py*c+px*s];
+        [px, py] = [px*c+py*s, py*c-px*s];
 
         px += this.x;
         py += this.y;
@@ -724,7 +724,7 @@ class DraggableObject {
     
         // Convert torque to angular acceleration (torque / moment of inertia)
         // For simplicity, assume moment of inertia is proportional to size^2
-        let momentOfInertia = this.size * this.size * 0.5 * 1000;
+        let momentOfInertia = this.mass * 1000 * 0.5 * 1000;
         this.angularVelocity += this.torque / momentOfInertia;
     }
 }
