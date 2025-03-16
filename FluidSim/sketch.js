@@ -2,6 +2,8 @@ let grid = [];
 let size = 50;
 let u = [];
 let v = [];
+let slider;
+let gridInstance;
 function setup() 
 {
     createCanvas(800, 600);
@@ -9,13 +11,27 @@ function setup()
     grid = Array.from({ length: width/size }, () => Array(height/size).fill(0))
     u = grid.length;
     v = grid[0].length;
+    gridInstance = new Grid(grid,20,20);
     initCells();
-    drawCells(grid);
+    drawCells();
+    slider = createSlider(0,100,9.81,0);
+    slider.size(100);
+    let circle = createButton('Circle');
+    circle.mousePressed(() => changeObject('circle'));
+    let square = createButton('Square');
+    square.mousePressed(() => changeObject('square'));
+    let abhi = createButton('abhi');
+    abhi.mousePressed(() => changeObject('abhi'));
+    function changeObject(object) {
+        background(random(255)); 
+        console.log('Changed to:', object);// implement
+    }
 }
 
 function draw()
 {
-    drawCells(grid);
+    drawCells(gridInstance.cellList);
+    UpdateCells()
 }
 
 function mouseDragged() {
@@ -25,8 +41,7 @@ function mouseDragged() {
 }
 
 
-function drawCells(grid){
-    gridInstance = new Grid(grid,20,20);
+function drawCells(){
     for(row of gridInstance.cellList){
         for(cell of row){
             stroke( 255, 255, 255);
@@ -45,9 +60,15 @@ function initCells(){
     
 }
 
-function UpdateCells(u, v, grid){
-    let newGrid= [];
-    for(let x = 0; x< u; x++){ 
+function UpdateCells(){
+    let grav = slider.value(); // use this value to have changing gravity vals
+    for(let x = 0; x < gridInstance.cellList.length; x++) { 
+        for(let y = 0; y < gridInstance.cellList[x].length; y++) {
+            if (floor(random(0,100)) == 2) {
+                gridInstance.cellList[x][y].value += 10;
+                gridInstance.cellList[x][y].value = constrain(gridInstance.cellList[x][y].value, 0, 255);
+            }
+        }
     }
 }
 
@@ -63,6 +84,7 @@ class Cell{
 class Grid {
     constructor(arr,xlen,ylen) {
         this.cellList = arr;
+        this.grav = 9.81;
         this.ylen = ylen;
         this.xlen = xlen;
         this.numCells = ylen * xlen;
@@ -77,17 +99,16 @@ class Grid {
         this.m.fill(1.0);
     }
     
-    integrate(dt, grav) {
+    integrate(dt) {
         //assumes 1 cell buffer on outside of grid
         for (let i = 1; i <= this.xlen-1; i++) {
             for (let j = 1; j < this.ylen-1; j++) {
                 if (this.s[i * ylen + j] != 0.0 && this.s[i * ylen + j - 1] != 0.0) {
                     //^^ checks if this node is on the ground (s is 1d list) (v is 1d list)
                     let v_old = this.v[i * ylen + j];
-                    this.v[i * ylen + j] = v_old + grav*dt; // basic euler estimation
+                    this.v[i * ylen + j] = v_old + this.grav*dt; // basic euler estimation
                 }
             }
         }
     }
-    
   }
