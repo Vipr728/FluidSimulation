@@ -635,6 +635,16 @@ class DraggableObject {
     }
     
     contains(px, py) {
+        px -= this.x;
+        py -= this.y;
+
+        let a = 0;  // this.angle
+        let c = Math.cos(a), s = Math.sin(a);
+        [px, py] = [px*c-py*s, py*c+px*s];
+
+        px += this.x;
+        py += this.y;
+
         if (this.type == 'png') {
             let x = this.x-this.data.w/2;
             let y = this.y-this.data.h/2;
