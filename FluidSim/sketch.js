@@ -16,7 +16,7 @@ let grid = [];
     let svgTemplates = {};
     let spoutSlider;
     let label;
-    
+    let startx;
 
 
     function setup() {
@@ -37,23 +37,23 @@ let grid = [];
         });
   
         label = createP("")
-        let startx = windowWidth/2 - 800;
+        startx = windowWidth/2 - 900;
         
         spoutSlider.position(startx, windowHeight/1.18)
-        let addCircle = createButton('Add Circle');
+        let addCircle = createButton('Circle');
         addCircle.mousePressed(() => addNewObject('circle'));
         addCircle.position(startx + 250, windowHeight/1.2);
-        let addSquare = createButton('Add Square');
+        let addSquare = createButton('Square');
         addSquare.mousePressed(() => addNewObject('square'));
-        addSquare.position(startx + 450, windowHeight/1.2);
-        let addArc = createButton('Add SemiCircle');
+        addSquare.position(startx + 350, windowHeight/1.2);
+        let addArc = createButton('SemiCircle');
         addArc.mousePressed(() => addNewObject('arc'));
-        addArc.position(startx+650, windowHeight/1.2);
+        addArc.position(startx+550, windowHeight/1.2);
         function addNewObject(type) {
             objects.push(new DraggableObject(width/2, height/2, type, 60));
         }
-        let addFlash = createButton('Add Flash');   
-        addFlash.position(startx + 850, windowHeight/1.2);
+        let addFlash = createButton('Flash');   
+        addFlash.position(startx + 450, windowHeight/1.2);
         addFlash.mousePressed(() => {
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
@@ -62,8 +62,8 @@ let grid = [];
             mass: 2,
         }))
         });
-        let addAbhi = createButton('Add Abhi');
-        addAbhi.position(startx + 1250, windowHeight/1.2);
+        let addAbhi = createButton('Abhi');
+        addAbhi.position(startx + 700, windowHeight/1.2);
         addAbhi.mousePressed(() => {
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
@@ -71,8 +71,8 @@ let grid = [];
             path: '/FluidSim/pngs/abhi.png',
             mass: 2,
         }))});
-        let addGeorge = createButton('Add George');
-        addGeorge.position(startx + 1450, windowHeight/1.2);
+        let addGeorge = createButton('Fat George');
+        addGeorge.position(startx + 800, windowHeight/1.2);
         addGeorge.mousePressed(() => {
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
@@ -81,8 +81,8 @@ let grid = [];
             mass: 2,
         }))}
         );
-        let addSpace = createButton('Add SpaceNeedle');
-        addSpace.position(startx + 1650, windowHeight/1.2);
+        let addSpace = createButton('Space Needle');
+        addSpace.position(startx + 1100, windowHeight/1.2);
         addSpace.mousePressed(() => {
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
@@ -90,13 +90,23 @@ let grid = [];
             path: '/FluidSim/pngs/space.png',
             mass: 2,
         }))});
+        let addMog = createButton('Add Mog George');
+        addMog.position(startx + 1300, windowHeight/1.2);
+        addMog.mousePressed(() => {
+        objects.push(new DraggableObject(width/2, height/2, 'png', {
+            w: 80,
+            h: 80,
+            path: '/FluidSim/pngs/george mogging.png',
+            mass: 2,
+        }))}
+        );
 /* The above code is commented out JavaScript code that appears to be adding a new DraggableObject to
 an array named `objects`. The DraggableObject is being initialized with specific properties such as
 position at the center of the canvas (`width/2, height/2`), image type ('png'), width and height of
 80 units, image path to '/FluidSim/pngs/cup.png', and mass of 3. However, since the code is
 commented out, it is not currently active and will not be executed when the program runs. */
         let addCup = createButton('Add Cup');
-        addCup.position(startx + 1050, windowHeight/1.2);
+        addCup.position(startx + 950, windowHeight/1.2);
         addCup.mousePressed(() => {
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
@@ -119,7 +129,7 @@ commented out, it is not currently active and will not be executed when the prog
         }
         let val = spoutSlider.value();
         label.html(`Spout Intensity: ${val}`);
-        label.position(windowWidth/2 - 800, windowHeight/1.2 - 50);
+        label.position(startx, windowHeight/1.2 - 50);
         label.style('color', 'white');
         label.style('font', 'bold')
         label.style('font-size', '20px');
