@@ -58,7 +58,7 @@ let grid = [];
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
             h: 80,
-            path: '/FluidSim/pngs/flash.png',
+            path: '/FluidSimulation/FluidSim/pngs/flash.png',
             mass: 2,
         }))
         });
@@ -68,7 +68,7 @@ let grid = [];
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
             h: 80,
-            path: '/FluidSim/pngs/abhi.png',
+            path: '/FluidSimulation/FluidSim/pngs/abhi.png',
             mass: 2,
         }))});
         let addGeorge = createButton('Fat George');
@@ -77,7 +77,7 @@ let grid = [];
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
             h: 80,
-            path: '/FluidSim/pngs/george.png',
+            path: '/FluidSimulation/FluidSim/pngs/george.png',
             mass: 2,
         }))}
         );
@@ -87,7 +87,7 @@ let grid = [];
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
             h: 80,
-            path: '/FluidSim/pngs/space.png',
+            path: '/FluidSimulation/FluidSim/pngs/space.png',
             mass: 2,
         }))});
         let addMog = createButton('Add Mog George');
@@ -96,7 +96,7 @@ let grid = [];
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
             h: 80,
-            path: '/FluidSim/pngs/george mogging.png',
+            path: '/FluidSimulation/FluidSim/pngs/george mogging.png',
             mass: 2,
         }))}
         );
@@ -111,7 +111,7 @@ commented out, it is not currently active and will not be executed when the prog
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
             h: 80,
-            path: '/FluidSim/pngs/cup.png',
+            path: '/FluidSimulation/FluidSim/pngs/cup.png',
             mass: 3,
         }))});
     }
