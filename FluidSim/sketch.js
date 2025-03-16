@@ -39,7 +39,7 @@ let grid = [];
         label = createP("")
         startx = windowWidth/2 - 900;
         
-        spoutSlider.position(startx, windowHeight/1.18)
+        spoutSlider.position(windowWidth/2-70, windowHeight/1.11)
         let addCircle = createButton('Circle');
         addCircle.mousePressed(() => addNewObject('circle'));
         addCircle.position(startx + 250, windowHeight/1.2);
@@ -111,7 +111,7 @@ commented out, it is not currently active and will not be executed when the prog
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
             h: 80,
-            path: '/FluidSimulation/FluidSim/pngs/cup.png',
+            path: 'FluidSimulation/FluidSim/pngs/cup.png',
             mass: 3,
         }))});
     }
@@ -129,7 +129,7 @@ commented out, it is not currently active and will not be executed when the prog
         }
         let val = spoutSlider.value();
         label.html(`Spout Intensity: ${val}`);
-        label.position(startx, windowHeight/1.2 - 50);
+        label.position(windowWidth/2-100, windowHeight/1.1);
         label.style('color', 'white');
         label.style('font', 'bold')
         label.style('font-size', '20px');
