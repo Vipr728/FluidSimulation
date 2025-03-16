@@ -14,26 +14,10 @@ let grid = [];
     let svgObjects = [];
     let svgCache = new Map();
     let svgTemplates = {};
-
-    function preload() {
-        // Load SVGs from /svgs directory
-        const svgFiles = ['abhi.txt', 'cow.txt', 'space.txt', 'george.txt', 'arrow.txt'];
-        svgFiles.forEach(filename => {
-            // Use loadXML instead of loadStrings
-            svgTemplates[filename] = loadStrings(`svgs/${filename}`);
-            console.log(svgTemplates[filename]); // Log loaded SVGs
-        
-        });
-    }
+    let spoutSlider;
+    let label;
     
-    function addSVGObject(filename) {
-        const svg = svgTemplates[filename];
-        let svgString = svg;
-        console.log("svgString" + svgString); // Log the SVG string
-        const svgData = parseSVG(svgString, 0, 0);
-        console.log("SVG data" + svgData); // Log the parsed SVG data
-        objects.push(new DraggableObject(mouseX, mouseY, 'svg', svgData));
-    }
+
 
     function setup() {
         createCanvas(800, 520);
@@ -47,12 +31,13 @@ let grid = [];
         initCells();
         drawCells(grid);
         gridInstance = new Fluid(grid, 1000, width / size, height / size, size);
-        let spoutSlider = createSlider(0,1000, 250, 1);
-
+        spoutSlider = createSlider(0,1000, 250, 1);
         spoutSlider.input(() => {
             gridInstance.spoutIntensity = spoutSlider.value();
         });
-        let startx = windowWidth/2 - 400;
+  
+        label = createP("")
+        let startx = windowWidth/2 - 600;
         
         spoutSlider.position(startx, windowHeight/1.2)
         let addCircle = createButton('Add Circle');
@@ -60,30 +45,65 @@ let grid = [];
         addCircle.position(startx + 250, windowHeight/1.2);
         let addSquare = createButton('Add Square');
         addSquare.mousePressed(() => addNewObject('square'));
-        addSquare.position(startx + 350, windowHeight/1.2);
+        addSquare.position(startx + 450, windowHeight/1.2);
         let addArc = createButton('Add SemiCircle');
         addArc.mousePressed(() => addNewObject('arc'));
-        addArc.position(startx+450, windowHeight/1.2);
+        addArc.position(startx+650, windowHeight/1.2);
         function addNewObject(type) {
             objects.push(new DraggableObject(width/2, height/2, type, 60));
         }
-        Object.keys(svgTemplates).forEach(name => {
-            let btn = createButton(`Add ${name}`);
-            btn.mousePressed(() => addSVGObject(name));}
-        );
-
+        let addFlash = createButton('Add Flash');   
+        addFlash.position(startx + 850, windowHeight/1.2);
+        addFlash.mousePressed(() => {
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
             h: 80,
             path: '/FluidSim/pngs/flash.png',
             mass: 2,
         }))
-        // objects.push(new DraggableObject(width/2, height/2, 'png', {
-        //     w: 80,
-        //     h: 80,
-        //     path: '/FluidSim/pngs/cup.png',
-        //     mass: 3,
-        // }))
+        });
+        let addAbhi = createButton('Add Abhi');
+        addAbhi.position(startx + 1050, windowHeight/1.2);
+        addAbhi.mousePressed(() => {
+        objects.push(new DraggableObject(width/2, height/2, 'png', {
+            w: 80,
+            h: 80,
+            path: '/FluidSim/pngs/abhi.png',
+            mass: 2,
+        }))});
+        let addGeorge = createButton('Add George');
+        addGeorge.position(startx + 1250, windowHeight/1.2);
+        addGeorge.mousePressed(() => {
+        objects.push(new DraggableObject(width/2, height/2, 'png', {
+            w: 80,
+            h: 80,
+            path: '/FluidSim/pngs/george.png',
+            mass: 2,
+        }))}
+        );
+        let addSpace = createButton('Add SpaceNeedle');
+        addSpace.position(startx + 1450, windowHeight/1.2);
+        addSpace.mousePressed(() => {
+        objects.push(new DraggableObject(width/2, height/2, 'png', {
+            w: 80,
+            h: 80,
+            path: '/FluidSim/pngs/spaceneedle.png',
+            mass: 2,
+        }))});
+/* The above code is commented out JavaScript code that appears to be adding a new DraggableObject to
+an array named `objects`. The DraggableObject is being initialized with specific properties such as
+position at the center of the canvas (`width/2, height/2`), image type ('png'), width and height of
+80 units, image path to '/FluidSim/pngs/cup.png', and mass of 3. However, since the code is
+commented out, it is not currently active and will not be executed when the program runs. */
+        let addCup = createButton('Add Cup');
+        addCup.position(startx + 1050, windowHeight/1.2);
+        addCup.mousePressed(() => {
+        objects.push(new DraggableObject(width/2, height/2, 'png', {
+            w: 80,
+            h: 80,
+            path: '/FluidSim/pngs/cup.png',
+            mass: 3,
+        }))});
     }
 
     function draw() {
@@ -97,7 +117,10 @@ let grid = [];
             obj.update();
             obj.show();
         }
-
+        let val = spoutSlider.value();
+        label.html(`Spout Intensity: ${val}`);
+        label.position(windowWidth/2 - 600, windowHeight/1.2 - 50);
+        
         // image(img, 80, 40, 20, 20, 0, 0, img.width, img.height)
     }
 
@@ -500,8 +523,8 @@ let grid = [];
             console.log(startJ, endJ);
             // Inject fluid and velocity
             for(let j = startJ; j < endJ; j++) {
-                let index = 1 * this.ny + j; // Leftmost fluid column
-                this.m[index] = 1;        // Max density
+                let index =  this.ny +j; // Leftmost fluid column
+                this.m[index] = 1.8;        // Max density
                 this.u[index] = spoutVelocity; // Rightward velocity
             }
 
@@ -515,7 +538,7 @@ let grid = [];
                 this.m[index] = 1; // Max density
 
                 // Set inward velocity (negative u and v for whirlpool effect)
-                this.u[index] = -spoutVelocity * 0.5; // Horizontal velocity (inward)
+                this.u[index] = -spoutVelocity; // Horizontal velocity (inward)
             }     
     
             this.integrate(dt, grav);
