@@ -111,7 +111,7 @@ commented out, it is not currently active and will not be executed when the prog
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
             h: 80,
-            path: 'FluidSimulation/FluidSim/pngs/cup.png',
+            path: '/FluidSimulation/FluidSim/pngs/cup.png',
             mass: 3,
         }))});
     }
