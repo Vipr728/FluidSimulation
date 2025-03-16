@@ -17,17 +17,21 @@ let grid = [];
 
     function preload() {
         // Load SVGs from /svgs directory
-        const svgFiles = ['abhi.svg', 'cow.svg', 'george.svg'];
+        const svgFiles = ['abhi.txt', 'cow.txt', 'space.txt', 'george.txt', 'arrow.txt'];
         svgFiles.forEach(filename => {
             // Use loadXML instead of loadStrings
-            svgTemplates[filename] = loadXML(`svgs/${filename}`);
+            svgTemplates[filename] = loadStrings(`svgs/${filename}`);
+            console.log(svgTemplates[filename]); // Log loaded SVGs
+        
         });
     }
     
     function addSVGObject(filename) {
-        const svgXML = svgTemplates[filename];
-        const svgString = new XMLSerializer().serializeToString(svgXML);
-        const svgData = parseSVG(svgString, 0, 0, 0.5);
+        const svg = svgTemplates[filename];
+        let svgString = svg;
+        console.log("svgString" + svgString); // Log the SVG string
+        const svgData = parseSVG(svgString, 0, 0);
+        console.log("SVG data" + svgData); // Log the parsed SVG data
         objects.push(new DraggableObject(mouseX, mouseY, 'svg', svgData));
     }
 
@@ -43,22 +47,6 @@ let grid = [];
         initCells();
         drawCells(grid);
         gridInstance = new Fluid(grid, 1000, width / size, height / size, size);
-        slider = createSlider(0, 100, 9.81, 0);
-        slider.size(100);
-        let circle = createButton('Circle');
-        circle.mousePressed(() => changeObject('circle'));
-        let square = createButton('Square');
-        square.mousePressed(() => changeObject('square'));
-        let abhi = createButton('abhi');
-        abhi.mousePressed(() => changeObject('abhi'));
-        function changeObject(object) {
-            background(random(255));
-            console.log('Changed to:', object); // implement
-        }
-        let toggle = createButton("Add Circle");
-        toggle.mousePressed(function () {
-            add = !add;
-        });
         let spoutSlider = createSlider(0,1000, 250, 1);
         spoutSlider.input(() => {
             gridInstance.spoutIntensity = spoutSlider.value();
@@ -67,14 +55,16 @@ let grid = [];
         addCircle.mousePressed(() => addNewObject('circle'));
         let addSquare = createButton('Add Square');
         addSquare.mousePressed(() => addNewObject('square'));
+        let addArc = createButton('Add SemiCircle');
+        addArc.mousePressed(() => addNewObject('arc'));
 
         function addNewObject(type) {
-        objects.push(new DraggableObject(width/2, height/2, 60, type));
-        }
-        Object.keys(svgTemplates).forEach(name => {
-            let btn = createButton(`Add ${name}`);
-            btn.mousePressed(() => addSVGObject(name));
-          });
+            objects.push(new DraggableObject(width/2, height/2, type, 60));
+            }
+            Object.keys(svgTemplates).forEach(name => {
+                let btn = createButton(`Add ${name}`);
+                btn.mousePressed(() => addSVGObject(name));}
+        );
     }
 
     function draw() {
@@ -103,7 +93,7 @@ let grid = [];
           if(objects[i].contains(mouseX, mouseY)) {
             selectedObject = objects[i];
             selectedObject.dragging = true;
-            return;
+            return; 
           }
         }
       }
@@ -533,6 +523,8 @@ let grid = [];
                     this.m[i*n+j] = 0.;  // try adjusting this val to change trail color
                     this.u[i*n+j] = this.u[(i+1)*n+j] = vx;
                     this.v[i*n+j] = this.v[i*n+j+1] = vy;
+                    obj.vx = vx;
+                    obj.vy=vy;
                 }
             }
         }
@@ -569,19 +561,21 @@ class DraggableObject {
         this.dragging = false;
         this.prevX = x;
         this.prevY = y;
+        this.drag = 0;
+        this.vx=0;
+        this.vy=0;
         
-        // Set size based on type
         if(type === 'svg') {
             this.size = max(this.data.w, this.data.h) * 2; // Scale up SVG objects
         } else {
-            this.size = 60; // Default size for circles/squares
+            this.size = 60;
         }
     }
 
     show() {
         stroke(255);
         fill(200, 200); // More visible fill
-        
+        console.log(this.type);
         if (this.type === 'svg') {
             push();
             translate(this.x, this.y); // Center position
@@ -592,6 +586,8 @@ class DraggableObject {
             pop();
         } else if (this.type === 'circle') {
             ellipse(this.x, this.y, this.size, this.size);
+        } else if (this.type === 'arc') {
+            arc(this.x, this.y, this.size, this.size,0,PI);
         } else { // square
             rectMode(CENTER);
             rect(this.x, this.y, this.size, this.size);
@@ -602,7 +598,7 @@ class DraggableObject {
         if (this.type === 'svg') {
             const localX = px - (this.x - this.data.w/2);
             const localY = py - (this.y - this.data.h/2);
-            return this.data.points.some(p => 
+            return this.data.some(p => 
               dist(localX, localY, p.x + this.x - this.data.w/2, p.y + this.y - this.data.h/2) < 5
             );
           }
@@ -612,6 +608,11 @@ class DraggableObject {
         return px > this.x - this.size/2 && px < this.x + this.size/2 &&
                 py > this.y - this.size/2 && py < this.y + this.size/2;
         }
+    }
+
+    getDrag() {
+        this.drag = 2*0/1;
+
     }
     
     update() {

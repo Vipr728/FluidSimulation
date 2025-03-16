@@ -2,15 +2,38 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Eulerian Fluid Simulation</title>
 
+	<script src="https://cdn.tailwindcss.com"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
 	<script src="https://unpkg.com/p5.js-svg@1.5.1"></script>
 
 </head>
 
 <body>
+	<h1 class='text-center font-bold tracking-tight text-3xl pt-4'>FluidSim</h1>
 	<script src="sketch.js"></script>
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+	<script>
+		function fixUI() {
+			$('button').addClass('bg-zinc-300 px-4 py-2 rounded-md shadow-sm border-zinc-400 border-2 font-bold active:opacity-50')
+			$('button').parent().addClass('space-x-2 space-y-2 w-screen')
+			// $('canvas').css('width', '70%').css('height', '').css('max-height', '90%')
+			$('canvas').css('width', '').css('height', '').addClass('w-[90%] lg:w-[60%] mx-auto my-4 shadow-lg')
+			$('canvas').parent().css('margin', 0)
+		}
+		(() => {
+			let i = 0;
+			let interval = setInterval(() => {
+				if ($('button').hasClass('bg-red-500')) i++;
+				if (i == 10) clearInterval(interval);
+				fixUI();
+			}, 5);
+		})()
+		setInterval(() => fixUI(), 1000)
+	</script>
 </body>
 
 </html>
