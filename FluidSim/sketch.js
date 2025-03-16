@@ -466,11 +466,11 @@ let grid = [];
         
             // Add object velocity to fluid
             for(let obj of objects) {
-            const velX = obj.x - obj.prevX;
-            const velY = obj.y - obj.prevY;
-            if(velX !== 0 || velY !== 0) {
+                const velX = obj.x - obj.prevX;
+                const velY = obj.y - obj.prevY;
+                obj.prevX = obj.x;
+                obj.prevY = obj.y;
                 this.applyObjectVelocity(obj, velX*10, velY*10);
-            }
             }
             // Add pulsating spout
             let pulsation = Math.sin(frameCount * 0.1) * 5;
@@ -511,29 +511,24 @@ let grid = [];
         }
         applyObjectVelocity(obj, vx, vy) {
             const h = this.h;
-            const radius = obj.size/2;
-            const left = obj.x - radius;
-            const right = obj.x + radius;
-            const top = obj.y - radius;
-            const bottom = obj.y + radius;
-        
-            for(let i = 1; i < this.nx-1; i++) {
-              for(let j = 1; j < this.ny-1; j++) {
-                const x = i * h + h/2;
-                const y = j * h + h/2;
-                
-                if(x > left && x < right && y > top && y < bottom) {
-                  const distToCenter = dist(x, y, obj.x, obj.y);
-                  if(distToCenter < radius) {
-                    const falloff = 1 - distToCenter/radius;
-                    this.u[i * this.ny + j] += vx * falloff;
-                    this.v[i * this.ny + j] += vy * falloff;
-                    console.log(`Velocity at (i, j): u = ${this.u[i * n + j]}, v = ${this.v[i * n + j]}`);
-                  }
+            
+            let n = this.ny;
+            for (let i = 1; i < this.nx-2; i++) {
+                for (let j = 1; j < this.ny-2; j++) {
+                    // stay only if i, j in object
+                    // let dx = i*h + h/2 - obj.x;
+                    // let dy = j*h + h/2 - obj.y;
+                    // if (Math.abs(dx) >= radius || Math.abs(dy) >= radius) continue;
+                    // if (dist(0, 0, dx, dy) >= radius) continue;
+                    if (!obj.contains(i*h+h/2, j*h+h/2)) continue;
+
+                    this.s[i*n+j] = 0.;
+                    this.m[i*n+j] = 0.;  // try adjusting this val to change trail color
+                    this.u[i*n+j] = this.u[(i+1)*n+j] = vx;
+                    this.v[i*n+j] = this.v[i*n+j+1] = vy;
                 }
-              }
             }
-          }
+        }
     }
 
 class DraggableObject {
@@ -595,7 +590,5 @@ class DraggableObject {
         this.x = mouseX;
         this.y = mouseY;
         }
-        this.prevX = this.x;
-        this.prevY = this.y;
     }
 }
