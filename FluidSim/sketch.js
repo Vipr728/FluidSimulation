@@ -48,16 +48,22 @@ let grid = [];
         drawCells(grid);
         gridInstance = new Fluid(grid, 1000, width / size, height / size, size);
         let spoutSlider = createSlider(0,1000, 250, 1);
+
         spoutSlider.input(() => {
             gridInstance.spoutIntensity = spoutSlider.value();
         });
+        let startx = windowWidth/2 - 400;
+        
+        spoutSlider.position(startx, windowHeight/1.2)
         let addCircle = createButton('Add Circle');
         addCircle.mousePressed(() => addNewObject('circle'));
+        addCircle.position(startx + 250, windowHeight/1.2);
         let addSquare = createButton('Add Square');
         addSquare.mousePressed(() => addNewObject('square'));
+        addSquare.position(startx + 350, windowHeight/1.2);
         let addArc = createButton('Add SemiCircle');
         addArc.mousePressed(() => addNewObject('arc'));
-
+        addArc.position(startx+450, windowHeight/1.2);
         function addNewObject(type) {
             objects.push(new DraggableObject(width/2, height/2, type, 60));
         }
@@ -81,7 +87,7 @@ let grid = [];
     }
 
     function draw() {
-        background('#633f33');
+        background('#9e633f');
         // Draw fluid first
         drawCells(gridInstance.cellList);
         gridInstance.simulate(0.1, 9.81, 20);
@@ -233,7 +239,7 @@ let grid = [];
             this.y = y;
             this.size = size;
             this.value = value;
-            this.color = [0, 50, 200, 255]; // [R, G, B, A]
+            this.color = [188, 156, 101, 255]; // [R, G, B, A]
         }
     }
 
