@@ -37,9 +37,9 @@ let grid = [];
         });
   
         label = createP("")
-        let startx = windowWidth/2 - 600;
+        let startx = windowWidth/2 - 800;
         
-        spoutSlider.position(startx, windowHeight/1.2)
+        spoutSlider.position(startx, windowHeight/1.18)
         let addCircle = createButton('Add Circle');
         addCircle.mousePressed(() => addNewObject('circle'));
         addCircle.position(startx + 250, windowHeight/1.2);
@@ -63,7 +63,7 @@ let grid = [];
         }))
         });
         let addAbhi = createButton('Add Abhi');
-        addAbhi.position(startx + 1050, windowHeight/1.2);
+        addAbhi.position(startx + 1250, windowHeight/1.2);
         addAbhi.mousePressed(() => {
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
@@ -72,7 +72,7 @@ let grid = [];
             mass: 2,
         }))});
         let addGeorge = createButton('Add George');
-        addGeorge.position(startx + 1250, windowHeight/1.2);
+        addGeorge.position(startx + 1450, windowHeight/1.2);
         addGeorge.mousePressed(() => {
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
@@ -82,12 +82,12 @@ let grid = [];
         }))}
         );
         let addSpace = createButton('Add SpaceNeedle');
-        addSpace.position(startx + 1450, windowHeight/1.2);
+        addSpace.position(startx + 1650, windowHeight/1.2);
         addSpace.mousePressed(() => {
         objects.push(new DraggableObject(width/2, height/2, 'png', {
             w: 80,
             h: 80,
-            path: '/FluidSim/pngs/spaceneedle.png',
+            path: '/FluidSim/pngs/space.png',
             mass: 2,
         }))});
 /* The above code is commented out JavaScript code that appears to be adding a new DraggableObject to
@@ -119,7 +119,10 @@ commented out, it is not currently active and will not be executed when the prog
         }
         let val = spoutSlider.value();
         label.html(`Spout Intensity: ${val}`);
-        label.position(windowWidth/2 - 600, windowHeight/1.2 - 50);
+        label.position(windowWidth/2 - 800, windowHeight/1.2 - 50);
+        label.style('color', 'white');
+        label.style('font', 'bold')
+        label.style('font-size', '20px');
         
         // image(img, 80, 40, 20, 20, 0, 0, img.width, img.height)
     }
