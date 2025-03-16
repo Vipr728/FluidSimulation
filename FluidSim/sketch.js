@@ -39,7 +39,7 @@ let grid = [];
         label = createP("")
         startx = windowWidth/2 - 900;
         
-        spoutSlider.position(windowWidth/2-70, windowHeight/1.11)
+        spoutSlider.position(windowWidth/2-80, windowHeight/1.06)
         let addCircle = createButton('Circle');
         addCircle.mousePressed(() => addNewObject('circle'));
         addCircle.position(startx + 250, windowHeight/1.2);
