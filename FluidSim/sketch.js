@@ -60,11 +60,24 @@ let grid = [];
 
         function addNewObject(type) {
             objects.push(new DraggableObject(width/2, height/2, type, 60));
-            }
-            Object.keys(svgTemplates).forEach(name => {
-                let btn = createButton(`Add ${name}`);
-                btn.mousePressed(() => addSVGObject(name));}
+        }
+        Object.keys(svgTemplates).forEach(name => {
+            let btn = createButton(`Add ${name}`);
+            btn.mousePressed(() => addSVGObject(name));}
         );
+
+        objects.push(new DraggableObject(width/2, height/2, 'png', {
+            w: 80,
+            h: 80,
+            path: '/FluidSim/pngs/flash.png',
+            mass: 3,
+        }))
+        objects.push(new DraggableObject(width/2, height/2, 'png', {
+            w: 80,
+            h: 80,
+            path: '/FluidSim/pngs/cup.png',
+            mass: 3,
+        }))
     }
 
     function draw() {
@@ -78,6 +91,8 @@ let grid = [];
             obj.update();
             obj.show();
         }
+
+        // image(img, 80, 40, 20, 20, 0, 0, img.width, img.height)
     }
 
     function mouseDragged() {
@@ -542,7 +557,7 @@ let grid = [];
                         let i2 = i+dx, j2 = j+dy;
                         if (this.s[i2*n+j2] == 0.) continue;
                         // move by -dx, -dy
-                        let mag = this.p[i2*n+j2]/50000000;
+                        let mag = this.p[i2*n+j2]/(90000000*obj.mass);
                         velX -= dx*mag;
                         velY -= dy*mag;
                     }
@@ -564,9 +579,14 @@ class DraggableObject {
         this.drag = 0;
         this.vx=0;
         this.vy=0;
+        this.mass = 1.0;
+
+        if (this.data.mass != null) this.mass = this.data.mass;
         
         if(type === 'svg') {
             this.size = max(this.data.w, this.data.h) * 2; // Scale up SVG objects
+        } else if (type == 'png') {
+            this.img = loadImage(this.data.path);
         } else {
             this.size = 60;
         }
@@ -584,6 +604,8 @@ class DraggableObject {
             this.data.points.forEach(p => vertex(p.x, p.y));
             endShape(CLOSE);
             pop();
+        } else if (this.type == 'png') {
+            image(this.img, this.x-this.data.w/2, this.y-this.data.h/2, this.data.w, this.data.h, 0, 0, this.img.width, this.img.height)
         } else if (this.type === 'circle') {
             ellipse(this.x, this.y, this.size, this.size);
         } else if (this.type === 'arc') {
@@ -595,6 +617,19 @@ class DraggableObject {
     }
     
     contains(px, py) {
+        if (this.type == 'png') {
+            let x = this.x-this.data.w/2;
+            let y = this.y-this.data.h/2;
+            let localX = (px-x)/this.data.w*this.img.width;
+            let localY = (py-y)/this.data.h*this.img.height;
+
+            if (localX < 0 || localX >= this.img.width) return false;
+            if (localY < 0 || localY >= this.img.height) return false;
+            let pixel = this.img.get(localX, localY);
+            let alpha = pixel[3];
+            return alpha > 2;
+        }
+
         if (this.type === 'svg') {
             const localX = px - (this.x - this.data.w/2);
             const localY = py - (this.y - this.data.h/2);
@@ -608,6 +643,7 @@ class DraggableObject {
         return px > this.x - this.size/2 && px < this.x + this.size/2 &&
                 py > this.y - this.size/2 && py < this.y + this.size/2;
         }
+
     }
 
     getDrag() {
