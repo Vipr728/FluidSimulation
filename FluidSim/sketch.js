@@ -66,11 +66,24 @@ let grid = [];
         addArc.position(startx+450, windowHeight/1.2);
         function addNewObject(type) {
             objects.push(new DraggableObject(width/2, height/2, type, 60));
-            }
-        //     Object.keys(svgTemplates).forEach(name => {
-        //         let btn = createButton(`Add ${name}`);
-        //         btn.mousePressed(() => addSVGObject(name));}
-        // );
+        }
+        Object.keys(svgTemplates).forEach(name => {
+            let btn = createButton(`Add ${name}`);
+            btn.mousePressed(() => addSVGObject(name));}
+        );
+
+        objects.push(new DraggableObject(width/2, height/2, 'png', {
+            w: 80,
+            h: 80,
+            path: '/FluidSim/pngs/flash.png',
+            mass: 2,
+        }))
+        // objects.push(new DraggableObject(width/2, height/2, 'png', {
+        //     w: 80,
+        //     h: 80,
+        //     path: '/FluidSim/pngs/cup.png',
+        //     mass: 3,
+        // }))
     }
 
     function draw() {
@@ -84,6 +97,8 @@ let grid = [];
             obj.update();
             obj.show();
         }
+
+        // image(img, 80, 40, 20, 20, 0, 0, img.width, img.height)
     }
 
     function mouseDragged() {
@@ -473,6 +488,7 @@ let grid = [];
                 obj.prevY = obj.y;
 
                 this.applyObjectVelocity(obj, velX*10, velY*10);
+                obj.calcTorque(this);
             }
             // Add pulsating spout
             let pulsation = Math.sin(frameCount * 0.1) * 5;
@@ -488,6 +504,19 @@ let grid = [];
                 this.m[index] = 1;        // Max density
                 this.u[index] = spoutVelocity; // Rightward velocity
             }
+
+            let secondSpoutI = this.nx - 1; // Rightmost column (excluding boundary)
+            let secondSpoutStartJ = Math.floor(3 * this.ny / 4); // Start at 3/4 of the grid height
+            let secondSpoutEndJ = this.ny - 2; // End at the bottom row (excluding boundary)
+
+            // Inject fluid and velocity for the second spout
+            for(let j = secondSpoutStartJ; j < secondSpoutEndJ; j++) {
+                let index = secondSpoutI * this.ny + j;
+                this.m[index] = 1; // Max density
+
+                // Set inward velocity (negative u and v for whirlpool effect)
+                this.u[index] = -spoutVelocity * 0.5; // Horizontal velocity (inward)
+            }     
     
             this.integrate(dt, grav);
             this.p.fill(0);
@@ -548,7 +577,7 @@ let grid = [];
                         let i2 = i+dx, j2 = j+dy;
                         if (this.s[i2*n+j2] == 0.) continue;
                         // move by -dx, -dy
-                        let mag = this.p[i2*n+j2]/50000000;
+                        let mag = this.p[i2*n+j2]/(320000000*obj.mass);
                         velX -= dx*mag;
                         velY -= dy*mag;
                     }
@@ -570,9 +599,17 @@ class DraggableObject {
         this.drag = 0;
         this.vx=0;
         this.vy=0;
+        this.angle=0;
+        this.angularVelocity=0;
+        this.torque = 0;
+        this.mass = 1.0;
+
+        if (this.data.mass != null) this.mass = this.data.mass;
         
         if(type === 'svg') {
             this.size = max(this.data.w, this.data.h) * 2; // Scale up SVG objects
+        } else if (type == 'png') {
+            this.img = loadImage(this.data.path);
         } else {
             this.size = 60;
         }
@@ -580,27 +617,43 @@ class DraggableObject {
 
     show() {
         stroke(255);
-        fill(200, 200); // More visible fill
-        console.log(this.type);
+        fill(225, 225); // More visible fill
+        push();
+        translate(this.x, this.y); // Move to object's position
+        rotate(this.angle); // Apply rotation
         if (this.type === 'svg') {
-            push();
-            translate(this.x, this.y); // Center position
             scale(0.5); // Match the scale used in parseSVG
             beginShape();
             this.data.points.forEach(p => vertex(p.x, p.y));
             endShape(CLOSE);
-            pop();
+        } else if (this.type == 'png') {
+            console.log(`x=${this.x} y=${this.y} w=${this.data.w} h=${this.data.h} width=${width} height=${height}`)
+            image(this.img, -this.data.w/2, -this.data.h/2, this.data.w, this.data.h, 0, 0, this.img.width, this.img.height)
         } else if (this.type === 'circle') {
-            ellipse(this.x, this.y, this.size, this.size);
+            ellipse(0, 0, this.size, this.size); // Draw at (0, 0) after translate
         } else if (this.type === 'arc') {
-            arc(this.x, this.y, this.size, this.size,0,PI);
+            arc(0, 0, this.size, this.size, 0, PI);
         } else { // square
             rectMode(CENTER);
-            rect(this.x, this.y, this.size, this.size);
+            rect(0, 0, this.size, this.size); // Draw at (0, 0) after translate
         }
+        pop();
     }
     
     contains(px, py) {
+        if (this.type == 'png') {
+            let x = this.x-this.data.w/2;
+            let y = this.y-this.data.h/2;
+            let localX = (px-x)/this.data.w*this.img.width;
+            let localY = (py-y)/this.data.h*this.img.height;
+
+            if (localX < 0 || localX >= this.img.width) return false;
+            if (localY < 0 || localY >= this.img.height) return false;
+            let pixel = this.img.get(localX, localY);
+            let alpha = pixel[3];
+            return alpha > 2;
+        }
+
         if (this.type === 'svg') {
             const localX = px - (this.x - this.data.w/2);
             const localY = py - (this.y - this.data.h/2);
@@ -614,6 +667,7 @@ class DraggableObject {
         return px > this.x - this.size/2 && px < this.x + this.size/2 &&
                 py > this.y - this.size/2 && py < this.y + this.size/2;
         }
+
     }
 
     getDrag() {
@@ -623,8 +677,44 @@ class DraggableObject {
     
     update() {
         if (this.dragging) {
-        this.x = mouseX;
-        this.y = mouseY;
+            this.x = mouseX;
+            this.y = mouseY;
+        } else {
+            // Update position based on velocity
+            this.x += this.vx;
+            this.y += this.vy;
+    
+            // Update rotation based on angular velocity
+            this.angle += this.angularVelocity;
+    
+            // Apply damping to angular velocity (to slow down rotation over time)
+            this.angularVelocity *= 0.98;
         }
+    }
+    calcTorque(fluid) {
+        const h = fluid.h;
+        let n = fluid.ny;
+        this.torque = 0;
+    
+        for (let i = 1; i < fluid.nx - 2; i++) {
+            for (let j = 1; j < fluid.ny - 2; j++) {
+                if (!this.contains(i * h + h / 2, j * h + h / 2)) continue;
+    
+                // Calculate the vector from the object's center to the fluid cell
+                let dx = (i * h + h / 2) - this.x;
+                let dy = (j * h + h / 2) - this.y;
+    
+                // Calculate the cross product of the position vector and velocity vector
+                // Torque = r x F = dx * forceY - dy * forceX
+                let forceX = fluid.u[i * n + j];
+                let forceY = fluid.v[i * n + j];
+                this.torque += dx * forceY - dy * forceX;
+            }
+        }
+    
+        // Convert torque to angular acceleration (torque / moment of inertia)
+        // For simplicity, assume moment of inertia is proportional to size^2
+        let momentOfInertia = this.size * this.size * 0.5 * 1000;
+        this.angularVelocity += this.torque / momentOfInertia;
     }
 }
