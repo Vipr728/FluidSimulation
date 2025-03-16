@@ -78,9 +78,7 @@ let grid = [];
     }
 
     function draw() {
-        background(0);
-        var r = frameCount % 200 * Math.sqrt(2);
-        ellipse(100, 100, r, r);
+        background('#633f33');
         // Draw fluid first
         drawCells(gridInstance.cellList);
         gridInstance.simulate(0.1, 9.81, 20);
@@ -513,7 +511,8 @@ let grid = [];
                     
                     // Add velocity visualization (optional)
                     let vel = Math.hypot(this.u[x * this.ny + y], this.v[x * this.ny + y]);
-                    this.cellList[x][y].color = [0, 50, 200 + vel * 10, massValue * 255];
+                    // this.cellList[x][y].color = [0, 200, 100+vel*20, massValue * 255];
+                    this.cellList[x][y].color = [233, 220, 211, massValue * 255];
                 }
             }
         }
