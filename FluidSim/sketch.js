@@ -6,6 +6,8 @@ let add = false;
 let svgWidth = 20;
 let svgHeight = 20;
 let svg = [];
+let slider;
+let gridInstance;
 function setup() 
 {
     createCanvas(800, 600);
@@ -14,8 +16,21 @@ function setup()
     u = grid.length;
     v = grid[0].length;
     svg = loadStrings("arrow.txt");
+    gridInstance = new Grid(grid,20,20);
     initCells();
-    drawCells(grid);
+    drawCells();
+    slider = createSlider(0,100,9.81,0);
+    slider.size(100);
+    let circle = createButton('Circle');
+    circle.mousePressed(() => changeObject('circle'));
+    let square = createButton('Square');
+    square.mousePressed(() => changeObject('square'));
+    let abhi = createButton('abhi');
+    abhi.mousePressed(() => changeObject('abhi'));
+    function changeObject(object) {
+        background(random(255)); 
+        console.log('Changed to:', object);// implement
+    }
     let toggle = createButton("Add Circle")
     toggle.mousePressed(function() {
         add = !add;});
@@ -23,7 +38,8 @@ function setup()
 
 function draw()
 {
-    drawCells(grid);
+    drawCells(gridInstance.cellList);
+    UpdateCells()
 }
 
 function mouseDragged() {
@@ -39,8 +55,8 @@ function mousePressed() {
     }
 }
 
-function drawCells(grid){
-    for(row of grid){
+function drawCells(){
+    for(row of gridInstance.cellList){
         for(cell of row){
             stroke( 255, 255, 255);
             fill(0,0,255, cell.value);
@@ -96,3 +112,34 @@ class Cell{
     }
 }
 
+class Grid {
+    constructor(arr,xlen,ylen) {
+        this.cellList = arr;
+        this.grav = 9.81;
+        this.ylen = ylen;
+        this.xlen = xlen;
+        this.numCells = ylen * xlen;
+        this.u = new Float32Array(this.numCells); // horizontal velo at each location
+        this.v = new Float32Array(this.numCells); // vertical velo at each location
+        this.newU = new Float32Array(this.numCells); //  temp storage for horizaontal velo
+        this.newV = new Float32Array(this.numCells); // temp storage for vertical velo
+        this.p = new Float32Array(this.numCells); // pressure at each location
+        this.s = new Float32Array(this.numCells); // solid or not at each location (0 is solid)
+        this.m = new Float32Array(this.numCells); // mass at each location
+        this.newM = new Float32Array(this.numCells); // temp storage for masses
+        this.m.fill(1.0);
+    }
+    
+    integrate(dt) {
+        //assumes 1 cell buffer on outside of grid
+        for (let i = 1; i <= this.xlen-1; i++) {
+            for (let j = 1; j < this.ylen-1; j++) {
+                if (this.s[i * ylen + j] != 0.0 && this.s[i * ylen + j - 1] != 0.0) {
+                    //^^ checks if this node is on the ground (s is 1d list) (v is 1d list)
+                    let v_old = this.v[i * ylen + j];
+                    this.v[i * ylen + j] = v_old + this.grav*dt; // basic euler estimation
+                }
+            }
+        }
+    }
+  }
