@@ -70,14 +70,14 @@ let grid = [];
             w: 80,
             h: 80,
             path: '/FluidSim/pngs/flash.png',
-            mass: 3,
+            mass: 2,
         }))
-        objects.push(new DraggableObject(width/2, height/2, 'png', {
-            w: 80,
-            h: 80,
-            path: '/FluidSim/pngs/cup.png',
-            mass: 3,
-        }))
+        // objects.push(new DraggableObject(width/2, height/2, 'png', {
+        //     w: 80,
+        //     h: 80,
+        //     path: '/FluidSim/pngs/cup.png',
+        //     mass: 3,
+        // }))
     }
 
     function draw() {
@@ -571,7 +571,7 @@ let grid = [];
                         let i2 = i+dx, j2 = j+dy;
                         if (this.s[i2*n+j2] == 0.) continue;
                         // move by -dx, -dy
-                        let mag = this.p[i2*n+j2]/(90000000*obj.mass);
+                        let mag = this.p[i2*n+j2]/(320000000*obj.mass);
                         velX -= dx*mag;
                         velY -= dy*mag;
                     }
@@ -621,7 +621,8 @@ class DraggableObject {
             this.data.points.forEach(p => vertex(p.x, p.y));
             endShape(CLOSE);
         } else if (this.type == 'png') {
-            image(this.img, this.x-this.data.w/2, this.y-this.data.h/2, this.data.w, this.data.h, 0, 0, this.img.width, this.img.height)
+            console.log(`x=${this.x} y=${this.y} w=${this.data.w} h=${this.data.h} width=${width} height=${height}`)
+            image(this.img, -this.data.w/2, -this.data.h/2, this.data.w, this.data.h, 0, 0, this.img.width, this.img.height)
         } else if (this.type === 'circle') {
             ellipse(0, 0, this.size, this.size); // Draw at (0, 0) after translate
         } else if (this.type === 'arc') {
@@ -707,7 +708,7 @@ class DraggableObject {
     
         // Convert torque to angular acceleration (torque / moment of inertia)
         // For simplicity, assume moment of inertia is proportional to size^2
-        let momentOfInertia = this.size * this.size * 0.5;
+        let momentOfInertia = this.size * this.size * 0.5 * 1000;
         this.angularVelocity += this.torque / momentOfInertia;
     }
 }
