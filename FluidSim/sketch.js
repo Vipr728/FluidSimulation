@@ -32,7 +32,7 @@ let grid = [];
     }
 
     function setup() {
-        createCanvas(2000, 920);
+        createCanvas(800, 520);
         background(0);
         grid = Array.from({ length: width / size }, () => Array(height / size).fill(0));
         u = grid.length;
@@ -466,10 +466,18 @@ let grid = [];
         
             // Add object velocity to fluid
             for(let obj of objects) {
-                const velX = obj.x - obj.prevX;
-                const velY = obj.y - obj.prevY;
+                let velX, velY;
+                if (obj.dragging) {
+                    velX = (obj.x - obj.prevX);
+                    velY = (obj.y - obj.prevY);
+                } else {
+                    [velX, velY] = this.applyPressureToObject(obj);
+                    obj.x += velX;
+                    obj.y += velY;
+                }
                 obj.prevX = obj.x;
                 obj.prevY = obj.y;
+
                 this.applyObjectVelocity(obj, velX*10, velY*10);
             }
             // Add pulsating spout
@@ -528,6 +536,28 @@ let grid = [];
                     this.v[i*n+j] = this.v[i*n+j+1] = vy;
                 }
             }
+        }
+        applyPressureToObject(obj) {
+            const h = this.h;
+            let n = this.ny;
+
+            let velX = 0, velY = 0;
+
+            for (let i = 1; i < this.nx-2; i++) {
+                for (let j = 1; j < this.ny-2; j++) {
+                    if (!obj.contains(i*h+h/2, j*h+h/2)) continue;
+
+                    for (let [dx, dy] of [[-1, 0], [1, 0], [0, 1], [0, -1]]) {
+                        let i2 = i+dx, j2 = j+dy;
+                        if (this.s[i2*n+j2] == 0.) continue;
+                        // move by -dx, -dy
+                        let mag = this.p[i2*n+j2]/50000000;
+                        velX -= dx*mag;
+                        velY -= dy*mag;
+                    }
+                }
+            }
+            return [velX, velY]
         }
     }
 
